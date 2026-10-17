@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090710">
+<title>AFTERHOURS: Imposter</title>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+:root{--bg:#090710;--panel:#14111f;--panel2:#1b1629;--line:#342842;--pink:#ff4fc8;--purple:#a78bfa;--text:#faf7ff;--muted:#b7aec8;--green:#72f2bd;--red:#ff7892}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#211332 0%,#090710 52%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:14px;padding:13px 16px;font-weight:750;color:#100817;background:linear-gradient(110deg,var(--pink),#c4a7ff);box-shadow:0 7px 22px #ff4fc822;transition:transform .15s,opacity .15s}button:hover{transform:translateY(-1px)}button:disabled{opacity:.35;cursor:not-allowed;transform:none}.secondary{background:#211a30;color:var(--text);border:1px solid var(--line);box-shadow:none}.danger{background:#4a1b30;color:#ffdbe5;box-shadow:none;border:1px solid #78334d}.quiet{background:transparent;color:var(--muted);box-shadow:none;border:1px solid var(--line)}
+.wrap{width:min(920px,100%);margin:auto;padding:22px 16px 50px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:30px}.brand{font-size:14px;font-weight:900;letter-spacing:.17em}.brand span{color:var(--pink)}.pill{border:1px solid #59395f;border-radius:99px;padding:7px 10px;color:#e9d5ff;font-size:11px;font-weight:800;letter-spacing:.12em}
+.hero{text-align:center;padding:28px 0 22px}.eyebrow{font-size:11px;letter-spacing:.25em;color:var(--pink);font-weight:900}.hero h1{font-size:clamp(40px,9vw,78px);line-height:.95;letter-spacing:-.07em;margin:15px 0}.hero h1 em{font-style:normal;color:var(--pink);text-shadow:0 0 35px #ff4fc84d}.hero p{max-width:490px;margin:0 auto;color:var(--muted);line-height:1.6}
+.panel{background:linear-gradient(145deg,#191425ed,#100d19f5);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 18px 65px #0004;margin:16px 0}.panel h2,.panel h3{margin:0 0 8px}.muted{color:var(--muted)}.small{font-size:12px;line-height:1.55}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.stack{display:grid;gap:12px}.field{display:grid;gap:7px}.field label{font-size:12px;color:var(--muted);font-weight:750}.field input,.field select{width:100%;border-radius:12px;padding:13px 14px;background:#0c0913;border:1px solid var(--line);color:var(--text);outline:none}.field input:focus,.field select:focus{border-color:var(--purple)}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}.actions button{flex:1}.hidden{display:none!important}.notice{padding:12px 14px;border-radius:12px;background:#251b35;border:1px solid #4b345e;color:#d9c9f4;font-size:12px;line-height:1.5}.status{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted)}.dot{width:8px;height:8px;background:var(--green);border-radius:50%;box-shadow:0 0 12px #72f2bd88}.players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:15px}.player{display:flex;align-items:center;gap:10px;padding:11px;border-radius:12px;background:#0d0a15;border:1px solid #2a2138;min-width:0}.avatar{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:#332044;color:#f2b9ff;font-weight:900;flex-shrink:0}.playername{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:700}.hosttag{font-size:10px;color:var(--green);margin-left:auto}.bigword{font-size:clamp(34px,8vw,58px);font-weight:950;letter-spacing:-.04em;text-align:center;margin:18px 0;color:var(--pink);overflow-wrap:anywhere}.rolecard{padding:28px 18px;text-align:center;background:radial-gradient(circle at top,#342047,#151020 65%);border:1px solid #60406f;border-radius:20px}.roleicon{font-size:42px}.timer{font-size:44px;font-weight:900;letter-spacing:-.05em}.vote-option{display:flex;align-items:center;gap:10px;padding:13px;background:#0d0a15;border:1px solid var(--line);border-radius:13px;margin:8px 0;cursor:pointer}.vote-option input{accent-color:var(--pink)}.vote-option:has(input:checked){border-color:var(--pink);background:#29172e}.resultrow{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #30243b}.footer{text-align:center;color:#7e748d;font-size:11px;margin-top:28px}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);padding:12px 16px;border-radius:12px;background:#f5eaff;color:#1a1022;font-weight:750;box-shadow:0 8px 30px #0008;z-index:5;max-width:90%;text-align:center}
+@media(max-width:560px){.wrap{padding:16px 13px 35px}.panel{padding:17px;border-radius:18px}.grid{grid-template-columns:1fr}.players{grid-template-columns:1fr}.top{margin-bottom:15px}.hero{padding-top:22px}.actions{flex-direction:column}.actions button{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><div class="brand">AFTER<span>HOURS</span> <span style="color:#c4a7ff">/ IMPOSTER</span></div><div class="pill">18+ PARTY GAME</div></header>
+  <main id="home">
+    <section class="hero"><div class="eyebrow">TRUST NO ONE</div><h1>WHO'S THE<br><em>IMPOSTER?</em></h1><p>One word. A room full of suspects. Give clues, keep your cool, and catch the player who's bluffing.</p></section>
+    <div class="grid">
+      <section class="panel"><h2>Create a room</h2><p class="muted small">You're the host. Choose your room size and invite your group.</p>
+        <div class="stack">
+          <div class="field"><label for="hostName">YOUR NICKNAME</label><input id="hostName" maxlength="20" placeholder="e.g. Zo" autocomplete="nickname"></div>
+          <div class="field"><label for="capacity">MAX PLAYERS (INCLUDING YOU)</label><input id="capacity" type="number" min="3" max="100" value="10"></div>
+          <div class="field"><label for="imposterCount">NUMBER OF IMPOSTERS</label><select id="imposterCount"><option value="1">1 Imposter</option><option value="2">2 Imposters</option><option value="3">3 Imposters</option></select></div>
+          <div class="field"><label for="wordMode">IMPOSTER WORD</label><select id="wordMode"><option value="different">Related but different word</option><option value="blank">No word (hard mode)</option></select></div>
+          <button id="createBtn">Create private room ↗</button>
+        </div>
+      </section>
+      <section class="panel"><h2>Join a room</h2><p class="muted small">Got a code from the host? Enter it here to join their game.</p>
+        <div class="stack">
+          <div class="field"><label for="joinName">YOUR NICKNAME</label><input id="joinName" maxlength="20" placeholder="Choose a nickname" autocomplete="nickname"></div>
+          <div class="field"><label for="roomCode">ROOM CODE</label><input id="roomCode" maxlength="20" placeholder="AH-ABCDE-FGHIJ" autocapitalize="characters"></div>
+          <button class="secondary" id="joinBtn">Join room</button>
+        </div>
+      </section>
+    </div>
+    <div class="notice">🔒 Private room codes: only people with the code can attempt to join. The host approves joins automatically while the room is open and under capacity, so share your code only with your group.</div>
+  </main>
+
+  <section id="room" class="hidden">
+    <div class="panel">
+      <div class="status"><span class="dot"></span><span id="connectionText">Connected</span><span style="margin-left:auto" id="hostLabel">HOST ROOM</span></div>
+      <h2 id="roomTitle" style="margin-top:14px">Your room</h2>
+      <p class="muted small">Share this code with your group. Keep this page open while you play.</p>
+      <div class="rolecard" style="padding:18px;margin-top:16px"><div class="muted small">ROOM CODE</div><div id="codeDisplay" class="bigword" style="font-size:clamp(27px,7vw,42px);margin:8px 0;letter-spacing:.02em;color:#f7eaff">AH-ABCDE-FGHIJ</div><div class="actions" style="justify-content:center"><button id="copyCodeBtn" class="secondary">Copy room code</button><button id="copyLinkBtn" class="secondary">Copy invite link</button></div></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:22px"><h3>Players <span id="playerCount" class="muted">1/10</span></h3><span class="muted small" id="roomState">Waiting to start</span></div>
+      <div id="playersList" class="players"></div>
+      <div class="actions"><button id="startBtn">Start game</button><button id="leaveBtn" class="quiet">Leave room</button></div>
+      <p id="lobbyHint" class="muted small">The game needs at least 3 players. You can change the capacity when creating a new room.</p>
+    </div>
+  </section>
+
+  <section id="game" class="hidden">
+    <div class="panel">
+      <div class="status"><span class="dot"></span><span id="phaseLabel">ROLE REVEAL</span><span id="roundLabel" style="margin-left:auto">ROUND 1</span></div>
+      <div id="roleScreen">
+        <div class="rolecard" style="margin-top:16px"><div class="roleicon" id="roleIcon">🕵️</div><h2 id="roleTitle" style="margin-top:12px">Your secret role</h2><p id="roleDescription" class="muted">Tap to reveal your role.</p><button id="revealBtn">Reveal my role</button><div id="secretContent" class="hidden"><div class="bigword" id="secretWord">WORD</div><p class="muted small" id="secretHint"></p><button id="hideRoleBtn" class="secondary">Hide my role</button></div></div>
+        <div class="notice" style="margin-top:14px">🤫 Keep your screen private. Don't show anyone your word or role.</div>
+      </div>
+      <div id="clueScreen" class="hidden"><div class="rolecard" style="margin-top:16px"><div class="eyebrow">CLUE ROUND</div><h2>Say a clue. Don't say the word.</h2><p class="muted">Go around the group. Each player gives a short clue that proves they know the word without making it obvious.</p><div class="timer" id="timerDisplay">02:00</div><p class="small muted">Use your own group to decide when everyone has had a turn.</p></div><div class="actions"><button id="timerBtn" class="secondary">Start 2-minute timer</button><button id="toVoteBtn">Move to voting</button></div></div>
+      <div id="voteScreen" class="hidden"><h2 style="margin-top:16px">Who is bluffing?</h2><p class="muted small">Choose one player. Your vote is final.</p><div id="voteOptions"></div><div class="actions"><button id="submitVoteBtn">Submit vote</button><button id="hostEndVoteBtn" class="secondary hidden">Close voting & reveal</button></div><p id="voteStatus" class="muted small"></p></div>
+      <div id="resultsScreen" class="hidden"><div class="rolecard" style="margin-top:16px"><div class="roleicon">🏆</div><div class="eyebrow">ROUND COMPLETE</div><h2 id="winnerTitle">The result</h2><p id="winnerDescription" class="muted"></p></div><h3 style="margin-top:20px">Vote results</h3><div id="voteResults"></div><h3 style="margin-top:20px">Secret roles</h3><div id="roleResults"></div><div class="actions"><button id="playAgainBtn">Play another round</button><button id="backHomeBtn" class="quiet">Exit to home</button></div></div>
+    </div>
+  </section>
+  <div class="footer">AFTERHOURS: IMPOSTER · FREE MVP · Keep it fun, keep it consensual.</div>
+</div>
+<div id="toast" class="toast hidden"></div>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const WORDS = {
+ "Flirty":[["First date","Blind date"],["Love letter","Breakup text"],["Crush","Ex"],["Romantic dinner","Speed dating"],["Flirting","Ghosting"],["Love song","Sad song"],["Candlelight","Nightclub"]],
+ "Dating":[["Dating app","Matchmaker"],["Red flag","Green flag"],["Situationship","Relationship"],["Wedding","Divorce"],["First kiss","Last kiss"],["Meet the parents","Meet the ex"],["Anniversary","Valentine's Day"]],
+ "Spicy Opinions":[["Pineapple pizza","Cold pizza"],["Karaoke","Dance battle"],["Brunch","Midnight snack"],["Voice note","Text message"],["Double texting","Leaving on read"],["Reality TV","Rom-com"],["Beach holiday","City break"]],
+ "Party Chaos":[["Truth or dare","Never have I ever"],["Karaoke mic","DJ booth"],["Afterparty","House party"],["Mocktail","Energy drink"],["Dance floor","VIP booth"],["Board game","Card game"],["Costume party","Pool party"]]
+};
+const state={peer:null,host:false,conn:null,conns:new Map(),players:[],roomId:null,capacity:10,imposterCount:1,wordMode:"different",name:"",phase:"lobby",round:0,role:null,word:null,otherWord:null,votes:{},myVote:null,hasVoted:false,roleAssignments:{},timerInterval:null,seconds:120,category:"Flirty",lastResult:null,joining:false};
+function toast(msg){$("toast").textContent=msg;$("toast").classList.remove("hidden");setTimeout(()=>$("toast").classList.add("hidden"),2800)}
+function show(which){["home","room","game"].forEach(x=>$(x).classList.toggle("hidden",x!==which))}
+function randomCode(){const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let s="";for(let i=0;i<10;i++)s+=chars[Math.floor(Math.random()*chars.length)];return "ah"+s.toLowerCase()}
+function displayCode(id){const s=id.replace(/^ah/,"").toUpperCase();return "AH-"+s.slice(0,5)+"-"+s.slice(5)}
+function normalizeCode(s){return "ah"+String(s||"").toLowerCase().replace(/[^a-z0-9]/g,"").replace(/^ah/,"")}
+function cleanName(s){return String(s||"").trim().slice(0,20)}
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function sendHost(type,data={}){if(state.host){handleHostMessage(state.peer.id,{type,...data},null)}else if(state.conn&&state.conn.open){state.conn.send({type,...data})}}
+function broadcast(msg){for(const [id,c] of state.conns){if(c.open)try{c.send(msg)}catch(e){}}}
+function sendTo(id,msg){const c=state.conns.get(id);if(c&&c.open)c.send(msg)}
+function renderPlayers(){const list=$("playersList");list.innerHTML="";state.players.forEach((p,i)=>{const div=document.createElement("div");div.className="player";const av=document.createElement("div");av.className="avatar";av.textContent=(p.name||"?").slice(0,1).toUpperCase();const nm=document.createElement("div");nm.className="playername";nm.textContent=p.name;div.append(av,nm);if(p.id===state.roomId){const tag=document.createElement("span");tag.className="hosttag";tag.textContent="HOST";div.append(tag)}list.append(div)});$("playerCount").textContent=`${state.players.length}/${state.capacity}`;$("startBtn").disabled=!state.host||state.players.length<3||state.phase!=="lobby";$("startBtn").textContent=state.players.length<3?"Need 3+ players to start":(state.phase==="lobby"?"Start game":"Game in progress");$("lobbyHint").textContent=state.host?`Capacity: ${state.capacity}. ${state.players.length<state.capacity?"Waiting for players to join.":"Room is full."}`:"Waiting for the host to start. Keep this page open."; }
+function enterRoom(){show("room");$("codeDisplay").textContent=displayCode(state.roomId);$("hostLabel").textContent=state.host?"HOST ROOM":"PLAYER ROOM";$("startBtn").classList.toggle("hidden",!state.host);$("connectionText").textContent=state.host?"Room created on this device":"Connected to host";$("roomTitle").textContent=state.host?"Your room is ready":"You're in the room";renderPlayers()}
+function broadcastLobby(){broadcast({type:"LOBBY",players:state.players,capacity:state.capacity,phase:state.phase,imposterCount:state.imposterCount});renderPlayers()}
+function playerById(id){return state.players.find(p=>p.id===id)}
+function handleHostMessage(from,msg,conn){
+ if(msg.type==="JOIN_REQUEST"){
+   if(state.phase!=="lobby"){sendTo(from,{type:"ERROR",message:"This game has already started."});return}
+   if(state.players.length>=state.capacity){sendTo(from,{type:"ERROR",message:"This room is full."});return}
+   if(state.players.some(p=>p.id===from)){sendTo(from,{type:"ERROR",message:"You are already in this room."});return}
+   const name=cleanName(msg.name)||"Player";
+   state.players.push({id:from,name});
+   sendTo(from,{type:"WELCOME",roomId:state.roomId,capacity:state.capacity,players:state.players,hostName:state.name});
+   broadcastLobby();toast(`${name} joined the room`);return;
+ }
+ if(msg.type==="LEAVE"){
+   state.players=state.players.filter(p=>p.id!==from);state.conns.delete(from);delete state.votes[from];broadcastLobby();return;
+ }
+ if(msg.type==="VOTE"){
+   if(state.phase!=="voting"||!playerById(from)||state.votes[from])return;
+   if(!playerById(msg.target)||msg.target===from)return;
+   state.votes[from]=msg.target;
+   broadcast({type:"VOTE_COUNT",count:Object.keys(state.votes).length,total:state.players.length});
+   if(Object.keys(state.votes).length>=state.players.length)finishVoting();
+ }
+}
+function attachHostConnection(conn){
+ state.conns.set(conn.peer,conn);
+ conn.on("data",msg=>{if(msg&&typeof msg==="object")handleHostMessage(conn.peer,msg,conn)});
+ conn.on("close",()=>{if(state.conns.has(conn.peer)){state.conns.delete(conn.peer);state.players=state.players.filter(p=>p.id!==conn.peer);delete state.votes[conn.peer];broadcastLobby()}});
+ conn.on("error",()=>{});
+}
+async function createRoom(){
+ const name=cleanName($("hostName").value);if(!name){toast("Enter your nickname first.");$("hostName").focus();return}
+ let cap=Number($("capacity").value);if(!Number.isInteger(cap)||cap<3||cap>100){toast("Choose a room size from 3 to 100.");return}
+ const count=Number($("imposterCount").value);if(count>=cap){toast("There must be at least one regular player.");return}
+ if(!window.Peer){toast("Peer connection library did not load. Check your internet and refresh.");return}
+ cleanup(false);state.host=true;state.name=name;state.capacity=cap;state.imposterCount=count;state.wordMode=$("wordMode").value;state.phase="lobby";$("createBtn").disabled=true;
+ let id=randomCode();state.roomId=id;
+ try{
+   state.peer=new Peer(id,{debug:0});
+   state.peer.on("open",()=>{state.players=[{id:state.roomId,name:state.name}];state.peer.on("connection",attachHostConnection);enterRoom();$("createBtn").disabled=false;toast("Room created! Share the code with your group.")});
+   state.peer.on("error",err=>{console.error(err);$("createBtn").disabled=false;if(err.type==="unavailable-id"){toast("Room code collision. Please create the room again.");cleanup(false)}else toast("Could not create room. Check your internet and try again.")});
+ }catch(e){$("createBtn").disabled=false;toast("Could not create room. Please try again.")}
+}
+function joinRoom(){
+ const name=cleanName($("joinName").value),code=normalizeCode($("roomCode").value);
+ if(!name){toast("Enter your nickname first.");$("joinName").focus();return}
+ if(code.length<8){toast("Enter a valid room code.");return}
+ if(!window.Peer){toast("Peer connection library did not load. Check your internet and refresh.");return}
+ cleanup(false);state.host=false;state.name=name;state.roomId=code;state.joining=true;$("joinBtn").disabled=true;toast("Connecting to room…");
+ try{
+   state.peer=new Peer(undefined,{debug:0});
+   state.peer.on("open",()=>{const conn=state.peer.connect(code,{reliable:true});state.conn=conn;conn.on("open",()=>conn.send({type:"JOIN_REQUEST",name}));conn.on("data",msg=>handleClientMessage(msg));conn.on("close",()=>{if(!state.host)toast("Host connection closed. The room may have ended.")});conn.on("error",()=>toast("Connection problem. Check the code and try again."))});
+   state.peer.on("error",err=>{console.error(err);$("joinBtn").disabled=false;state.joining=false;toast(err.type==="peer-unavailable"?"Room not found. Check the code.":"Could not connect. Try again.")});
+   setTimeout(()=>{if(state.joining){$("joinBtn").disabled=false;state.joining=false;toast("No response yet. Check the room code and try again.")}},12000);
+ }catch(e){$("joinBtn").disabled=false;state.joining=false;toast("Could not connect. Try again.")}
+}
+function handleClientMessage(msg){
+ if(!msg||typeof msg!=="object")return;
+ if(msg.type==="ERROR"){toast(msg.message||"Unable to join.");$("joinBtn").disabled=false;state.joining=false;return}
+ if(msg.type==="WELCOME"){state.joining=false;$("joinBtn").disabled=false;state.roomId=msg.roomId;state.capacity=msg.capacity;state.players=msg.players||[];state.phase="lobby";enterRoom();return}
+ if(msg.type==="LOBBY"){state.players=msg.players||state.players;state.capacity=msg.capacity||state.capacity;state.phase=msg.phase||state.phase;renderPlayers();$("roomState").textContent=state.phase==="lobby"?"Waiting to start":state.phase;return}
+ if(msg.type==="ROLE"){state.role=msg.role;state.word=msg.word;state.otherWord=msg.otherWord;state.round=msg.round;state.phase="role";show("game");renderRole();return}
+ if(msg.type==="PHASE"){state.phase=msg.phase;if(msg.phase==="clue"){showGameSection("clueScreen");$("phaseLabel").textContent="CLUE ROUND"}if(msg.phase==="voting"){state.myVote=null;state.hasVoted=false;showGameSection("voteScreen");$("phaseLabel").textContent="VOTING";renderVoteOptions();$("voteStatus").textContent="Waiting for votes…"}if(msg.phase==="results")renderResults(msg.result);return}
+ if(msg.type==="VOTE_COUNT"){$("voteStatus").textContent=`Votes received: ${msg.count}/${msg.total}`;return}
+ if(msg.type==="RESULTS"){renderResults(msg.result);return}
+ if(msg.type==="RESET"){state.phase="lobby";state.role=null;state.word=null;state.hasVoted=false;show("room");renderPlayers();return}
+}
+function showGameSection(id){["roleScreen","clueScreen","voteScreen","resultsScreen"].forEach(x=>$(x).classList.toggle("hidden",x!==id));show("game")}
+function renderRole(){showGameSection("roleScreen");$("roundLabel").textContent=`ROUND ${state.round}`;$("roleIcon").textContent=state.role==="imposter"?"🕵️":"🔐";$("roleTitle").textContent=state.role==="imposter"?"You're the Imposter":"You're a Regular Player";$("roleDescription").textContent="Tap below when you're ready to view your secret."; $("revealBtn").classList.remove("hidden");$("secretContent").classList.add("hidden");$("secretWord").textContent=state.role==="imposter"?(state.word||"NO WORD"):state.word;$("secretHint").textContent=state.role==="imposter"?"Blend in. Listen closely and give a believable clue.":"Give clues that prove you know the word, without saying it."}
+function startGame(){
+ if(!state.host||state.players.length<3)return;
+ state.round++;state.phase="role";state.votes={};state.hasVoted=false;state.myVote=null;
+ const category=["Flirty","Dating","Spicy Opinions","Party Chaos"][Math.floor(Math.random()*4)];const pair=WORDS[category][Math.floor(Math.random()*WORDS[category].length)];const words=shuffle([...state.players]);const imposterIds=new Set(words.slice(0,Math.min(state.imposterCount,state.players.length-1)).map(p=>p.id));state.roleAssignments={};state.category=category;
+ state.players.forEach(p=>{const role=imposterIds.has(p.id)?"imposter":"regular";const word=role==="regular"?pair[0]:(state.wordMode==="blank"?"":pair[1]);state.roleAssignments[p.id]={role,word,otherWord:pair[0]};if(p.id===state.roomId){state.role=role;state.word=word;state.otherWord=pair[0]}else sendTo(p.id,{type:"ROLE",role,word,otherWord:pair[0],round:state.round})});
+ state.phase="role";broadcast({type:"PHASE",phase:"role",round:state.round});renderRole();toast("Roles assigned. Keep them secret.")
+}
+function revealRole(){$("revealBtn").classList.add("hidden");$("secretContent").classList.remove("hidden")}
+function hideRole(){$("secretContent").classList.add("hidden");$("revealBtn").classList.remove("hidden")}
+function startClue(){if(!state.host)return;state.phase="clue";broadcast({type:"PHASE",phase:"clue"});showGameSection("clueScreen");$("phaseLabel").textContent="CLUE ROUND";state.seconds=120;$("timerDisplay").textContent="02:00"}
+function startTimer(){if(state.timerInterval){clearInterval(state.timerInterval);state.timerInterval=null;$("timerBtn").textContent="Start 2-minute timer";return}state.timerInterval=setInterval(()=>{state.seconds=Math.max(0,state.seconds-1);const m=String(Math.floor(state.seconds/60)).padStart(2,"0"),s=String(state.seconds%60).padStart(2,"0");$("timerDisplay").textContent=`${m}:${s}`;if(state.seconds===0){clearInterval(state.timerInterval);state.timerInterval=null;$("timerBtn").textContent="Start 2-minute timer";toast("Time's up! Move to voting when ready.")}},1000);$("timerBtn").textContent="Pause timer"}
+function startVoting(){if(!state.host)return;state.phase="voting";state.votes={};state.players.forEach(p=>{if(p.id!==state.roomId)sendTo(p.id,{type:"PHASE",phase:"voting"})});showGameSection("voteScreen");$("phaseLabel").textContent="VOTING";$("hostEndVoteBtn").classList.remove("hidden");renderVoteOptions();$("voteStatus").textContent="Votes received: 0/"+state.players.length;broadcast({type:"PHASE",phase:"voting"});renderVoteOptions()}
+function renderVoteOptions(){const box=$("voteOptions");box.innerHTML="";state.players.filter(p=>p.id!==getMyId()).forEach(p=>{const label=document.createElement("label");label.className="vote-option";const input=document.createElement("input");input.type="radio";input.name="vote";input.value=p.id;input.disabled=state.hasVoted;const span=document.createElement("span");span.textContent=p.name;label.append(input,span);box.append(label)});$("submitVoteBtn").disabled=state.hasVoted}
+function getMyId(){return state.host?state.roomId:(state.peer&&state.peer.id)}
+function submitVote(){if(state.hasVoted)return;const selected=document.querySelector('input[name="vote"]:checked');if(!selected){toast("Choose a player first.");return}const target=selected.value;if(state.host){handleHostMessage(state.roomId,{type:"VOTE",target},null)}else sendHost("VOTE",{target});state.hasVoted=true;state.myVote=target;document.querySelectorAll('input[name="vote"]').forEach(x=>x.disabled=true);$("submitVoteBtn").disabled=true;$("voteStatus").textContent="Vote submitted. Waiting for the host to reveal results.";toast("Vote submitted.")}
+function finishVoting(){if(!state.host)return;state.phase="results";if(state.timerInterval){clearInterval(state.timerInterval);state.timerInterval=null}const counts={};Object.values(state.votes).forEach(id=>counts[id]=(counts[id]||0)+1);let max=0;Object.values(counts).forEach(n=>max=Math.max(max,n));const leaders=Object.keys(counts).filter(id=>counts[id]===max);const eliminated=leaders.length===1?leaders[0]:null;const roles=state.roleAssignments;const eliminatedWasImposter=eliminated&&roles[eliminated]?.role==="imposter";const imposterIds=Object.keys(roles).filter(id=>roles[id].role==="imposter");let winner=eliminatedWasImposter?"regular":(eliminated?"imposter":"tie");const result={counts,roles,players:state.players,eliminated,eliminatedWasImposter,winner,imposterIds,category:state.category,totalVotes:Object.keys(state.votes).length};broadcast({type:"RESULTS",result});renderResults(result)}
+function renderResults(result){if(!result)return;state.phase="results";state.lastResult=result;showGameSection("resultsScreen");$("phaseLabel").textContent="RESULTS";const names=id=>playerById(id)?.name||result.players?.find(p=>p.id===id)?.name||"Player";if(result.winner==="regular"){$("winnerTitle").textContent="The group caught the Imposter!";$("winnerDescription").textContent="Regular players win this round."}else if(result.winner==="imposter"){$("winnerTitle").textContent="The Imposter got away!";$("winnerDescription").textContent="The Imposter fooled the group."}else{$("winnerTitle").textContent="It's a tie!";$("winnerDescription").textContent="No single player received the most votes. Play another round."}
+ const vr=$("voteResults");vr.innerHTML="";const counts=result.counts||{};result.players.forEach(p=>{const row=document.createElement("div");row.className="resultrow";const a=document.createElement("span");a.textContent=p.name;const b=document.createElement("strong");b.textContent=String(counts[p.id]||0)+" vote"+((counts[p.id]||0)===1?"":"s");row.append(a,b);vr.append(row)});
+ const rr=$("roleResults");rr.innerHTML="";result.players.forEach(p=>{const row=document.createElement("div");row.className="resultrow";const a=document.createElement("span");a.textContent=p.name;const b=document.createElement("strong");const role=result.roles[p.id];b.textContent=role?(role.role==="imposter"?"IMPOSTER":"Regular · "+(role.word||"")):"Unknown";b.style.color=role&&role.role==="imposter"?"var(--pink)":"var(--green)";row.append(a,b);rr.append(row)});
+ $("playAgainBtn").classList.toggle("hidden",!state.host);$("backHomeBtn").textContent=state.host?"Close room":"Leave room";
+}
+function resetRound(){if(!state.host)return;state.phase="lobby";state.role=null;state.word=null;state.otherWord=null;state.votes={};state.roleAssignments={};state.hasVoted=false;state.myVote=null;broadcast({type:"RESET"});show("room");renderPlayers();$("roomState").textContent="Waiting to start"}
+function cleanup(showHome=true){if(state.timerInterval){clearInterval(state.timerInterval);state.timerInterval=null}try{if(state.conn)state.conn.close()}catch(e){}try{if(state.peer)state.peer.destroy()}catch(e){}state.peer=null;state.conn=null;state.conns.clear();state.players=[];state.roomId=null;state.host=false;state.phase="lobby";state.joining=false;state.role=null;state.votes={};state.roleAssignments={};state.hasVoted=false;$("joinBtn").disabled=false;$("createBtn").disabled=false;if(showHome)show("home")}
+function leaveRoom(){if(!state.host&&state.conn&&state.conn.open)state.conn.send({type:"LEAVE"});cleanup(true);toast("You left the room.")}
+$("createBtn").addEventListener("click",createRoom);$("joinBtn").addEventListener("click",joinRoom);
+$("copyCodeBtn").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(displayCode(state.roomId));toast("Room code copied!")}catch(e){toast("Your room code is "+displayCode(state.roomId))}});
+$("copyLinkBtn").addEventListener("click",async()=>{const url=location.href.split("?")[0]+"?room="+displayCode(state.roomId);try{await navigator.clipboard.writeText(url);toast("Invite link copied!")}catch(e){toast(url)}});
+$("startBtn").addEventListener("click",startGame);$("leaveBtn").addEventListener("click",leaveRoom);$("revealBtn").addEventListener("click",revealRole);$("hideRoleBtn").addEventListener("click",hideRole);$("timerBtn").addEventListener("click",startTimer);$("toVoteBtn").addEventListener("click",startVoting);$("submitVoteBtn").addEventListener("click",submitVote);$("hostEndVoteBtn").addEventListener("click",()=>{if(state.host)finishVoting()});$("playAgainBtn").addEventListener("click",resetRound);$("backHomeBtn").addEventListener("click",leaveRoom);
+const params=new URLSearchParams(location.search);if(params.get("room"))$("roomCode").value=params.get("room");
+window.addEventListener("beforeunload",()=>{if(state.timerInterval)clearInterval(state.timerInterval)});
+})();
+</script>
+</body>
+</html>
